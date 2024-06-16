@@ -1,13 +1,8 @@
 
-#from pytz import utc
-
-
-#coding: utc-8 # type: ignore
-
 def work_with_phonebook():	
     choice=show_menu()
     phone_book=read_txt('phon.txt')
-    while (choice!=7):
+    while (choice!=8):
         if choice==1:
             print_result(phone_book)
         elif choice==2:
@@ -29,6 +24,9 @@ def work_with_phonebook():
         elif choice==6:
             user_data=input('name file ')
             write_txt(user_data,phone_book)
+        elif choice==7:
+            last_name=input('lastname ')
+            print(delete_by_lastname(phone_book,last_name))
         choice=show_menu()
     write_txt('phon.txt',phone_book)
 
@@ -39,14 +37,15 @@ def show_menu():
           "3. Найти абонента по номеру телефона\n"
           "4. Добавить абонента в справочник\n"
           "5. Заменить номер абонента\n"
-          "8. Сохранить справочник в текстовом формате\n"
-          "7. Закончить работу")
+          "6. Сохранить справочник в текстовом формате\n"
+          "7. Удалить абонента по фамилии\n"
+          "8. Закончить работу")
     choice = int(input())
     return choice
 
 def print_result(contact_list: list):
-    #list_of_contacts = sorted(contact_list, key=lambda x: x['Фамилия'])
-    for contact in contact_list:
+    list_of_contacts = sorted(contact_list, key=lambda x: x['Фамилия'])
+    for contact in list_of_contacts:
         for key, value in contact.items():
             print(f'{key}: {value:12}', end='')
         print()
@@ -55,44 +54,50 @@ def find_by_lastname(phone_book,last_name):
     search_value = last_name
     found_contacts = []
     for contact in phone_book:
-        contact['Фамилия'] = contact['Фамилия'].replace(' ','')
+        #contact['Фамилия'] = contact['Фамилия'].replace(' ','')
         if contact['Фамилия'] == search_value:
             found_contacts.append(contact)
     if len(found_contacts) == 0:
-        print('Контакт не найден!')
+        return 'Контакт не найден!'
     else:
-        print_result(found_contacts)
+        return found_contacts
 
 
 def change_number(phone_book,last_name,new_number):
     for contact in phone_book:
-        contact['Фамилия'] = contact['Фамилия'].replace(' ','')
+        #contact['Фамилия'] = contact['Фамилия'].replace(' ','')
         if contact['Фамилия'] == last_name:
             contact['Телефон'] = new_number
-    print(print_result(phone_book))
+            return "Номер изменен"
+    return "Контакт не найден"
 
-def delete_by_lastname():
-    pass
+def delete_by_lastname(phone_book,last_name):
+    search_result = []
+    for contact in phone_book:
+        #contact['Фамилия'] = contact['Фамилия'].replace(' ','')
+        if contact['Фамилия'] == last_name:
+            search_result.append(contact)
+    phone_book.remove(search_result[0])
+    return "Контакт удален"
 
 def find_by_number(phone_book,number):
     search_value = number
     found_contacts = []
     for contact in phone_book:
-        contact['Телефон'] = contact['Телефон'].replace(' ','')
+        #contact['Телефон'] = contact['Телефон'].replace(' ','')
         if contact['Телефон'] == search_value:
             found_contacts.append(contact)
     if len(found_contacts) == 0:
-        print('Контакт не найден!')
+        return 'Контакт не найден!'
     else:
-        print_result(found_contacts)
+        return found_contacts
 
 def add_user(lastname,name,number,comment,phone_book):
-    lastname=f"{lastname} "
-    name=f" {name} "
-    comment=f" {comment}\n"
+    comment=f"{comment}\n"
     fields=['Фамилия', 'Имя', 'Телефон', 'Описание']
     new_user=dict(zip(fields, [lastname,name,number,comment]))
     phone_book.insert(0,new_user)
+    return "Абонент добавлен"
     
 def read_txt(filename): 
     phone_book=[]
@@ -109,6 +114,7 @@ def write_txt(filename , phone_book):
             s=''
             for v in phone_book[i].values():
                 s = s + v + ','
-            phrw.write(f'{s[:-1]}\n')
+            phrw.write(f'{s[:-1]}')
+    print(f"Файл сохранен {filename}")
 
 work_with_phonebook()
